@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Meri Website</title>
+
+    <style>
+        body {
+            background-color: lightblue;
+            text-align: center;
+            font-family: Arial;
+            padding-top: 20px;
+        }
+
+        nav {
+            background-color: darkblue;
+            padding: 15px;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin: 10px;
+        }
+
+        h1 {
+            font-size: 40px;
+            margin-top: 40px;
+        }
+
+        p {
+            font-size: 20px;
+            line-height: 1.6;
+        }
+
+        button {
+            background-color: darkblue;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+        <a href="#home">Home</a>
+        <a href="#about">About</a>
+        <a href="#contact">Contact</a>
+    </nav>
+
+    <h1 id="home">Assalam-o-Alaikum 👋</h1>
+
+    <p>Welcome to my website!</p>
+
+    <h2 id="about">About Me</h2>
+    <p>Main website development seekh raha hoon.</p>
+
+    <h2 id="contact">Contact</h2>
+    <p>Yahan contact information hogi.</p>
+
+    <button onclick="showMessage()">Click Me</button>
+
+    <script>
+        function showMessage() {
+            alert("Button kaam kar raha hai 🎉");
+        }
+    </script>
+
+</body>
+</html>
