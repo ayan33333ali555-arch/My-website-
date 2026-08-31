@@ -1,73 +1,359 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Meri Website</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Ayan Fitness Gym</title>
 
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
         body {
-            background-color: lightblue;
+            background-color: white;
+            color: #222;
+            line-height: 1.6;
+        }
+
+        header {
+            background-color: #111;
+            color: white;
+            padding: 20px;
             text-align: center;
-            font-family: Arial;
-            padding-top: 20px;
+        }
+
+        header h1 {
+            font-size: 32px;
         }
 
         nav {
-            background-color: darkblue;
-            padding: 15px;
+            background-color: #222;
+            text-align: center;
+            padding: 12px;
         }
 
         nav a {
             color: white;
             text-decoration: none;
-            margin: 10px;
+            margin: 0 10px;
+            font-weight: bold;
         }
 
-        h1 {
+        nav a:hover {
+            color: #ff4d4d;
+        }
+
+        .hero {
+            padding: 70px 20px;
+            text-align: center;
+            background-color: #f2f2f2;
+        }
+
+        .hero h2 {
             font-size: 40px;
-            margin-top: 40px;
+            margin-bottom: 15px;
         }
 
-        p {
-            font-size: 20px;
-            line-height: 1.6;
-        }
-
-        button {
-            background-color: darkblue;
-            color: white;
-            padding: 12px 25px;
-            border: none;
-            border-radius: 8px;
+        .hero p {
             font-size: 18px;
+            max-width: 700px;
+            margin: auto;
+        }
+
+        .btn {
+            display: inline-block;
+            margin-top: 25px;
+            padding: 12px 25px;
+            background-color: #111;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        .btn:hover {
+            background-color: #444;
+        }
+
+        section {
+            padding: 50px 20px;
+            max-width: 1100px;
+            margin: auto;
+        }
+
+        section h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 30px;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .card {
+            background-color: #f7f7f7;
+            padding: 25px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+        }
+
+        .card h3 {
+            margin-bottom: 10px;
+        }
+
+        .card p {
+            color: #555;
+        }
+
+        ul {
+            max-width: 700px;
+            margin: auto;
+            padding-left: 25px;
+        }
+
+        li {
+            margin: 10px 0;
+        }
+
+        .contact {
+            text-align: center;
+            background-color: #f2f2f2;
+            max-width: none;
+        }
+
+        footer {
+            background-color: #111;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+
+        /* Mobile Friendly */
+        @media (max-width: 768px) {
+
+            header h1 {
+                font-size: 26px;
+            }
+
+            nav a {
+                display: inline-block;
+                margin: 5px;
+                font-size: 14px;
+            }
+
+            .hero h2 {
+                font-size: 30px;
+            }
+
+            .cards {
+                grid-template-columns: 1fr;
+            }
+
+            section {
+                padding: 35px 15px;
+            }
         }
     </style>
 </head>
 
 <body>
 
+    <!-- Header -->
+    <header>
+        <h1>🏋️ Ayan Fitness Gym</h1>
+        <p>Train Hard. Stay Healthy. Become Stronger.</p>
+    </header>
+
+    <!-- Navigation -->
     <nav>
-        <a href="#home">Home</a>
         <a href="#about">About</a>
-        <a href="#contact">Contact</a>
+        <a href="#benefits">Benefits</a>
+        <a href="#workouts">Workouts</a>
+        <a href="#nutrition">Nutrition</a>
+        <a href="#equipment">Equipment</a>
+        <a href="#beginners">Beginners</a>
     </nav>
 
-    <h1 id="home">Assalam-o-Alaikum 👋</h1>
+    <!-- Hero Section -->
+    <div class="hero">
+        <h2>Welcome to Ayan Fitness Gym</h2>
 
-    <p>Welcome to my website!</p>
+        <p>
+            A professional fitness information website designed
+            to help you learn about exercise, workouts, nutrition,
+            gym equipment and healthy fitness habits.
+        </p>
 
-    <h2 id="about">About Me</h2>
-    <p>Main website development seekh raha hoon.</p>
+        <a href="#workouts" class="btn">Explore Workouts</a>
+    </div>
 
-    <h2 id="contact">Contact</h2>
-    <p>Yahan contact information hogi.</p>
+    <!-- About -->
+    <section id="about">
+        <h2>About Gym</h2>
 
-    <button onclick="showMessage()">Click Me</button>
+        <p>
+            A gym is a place where people can improve their physical
+            fitness through exercise and training. Regular physical
+            activity can help improve strength, endurance, flexibility
+            and overall well-being.
+        </p>
 
-    <script>
-        function showMessage() {
-            alert("Button kaam kar raha hai 🎉");
-        }
-    </script>
+        <p>
+            At Ayan Fitness Gym, our goal is to provide useful fitness
+            information for beginners and people who want to learn
+            more about healthy exercise habits.
+        </p>
+    </section>
+
+    <!-- Benefits -->
+    <section id="benefits">
+        <h2>Benefits of Exercise</h2>
+
+        <div class="cards">
+
+            <div class="card">
+                <h3>💪 Strength</h3>
+                <p>
+                    Strength training can help improve muscle strength
+                    and physical performance.
+                </p>
+            </div>
+
+            <div class="card">
+                <h3>❤️ Fitness</h3>
+                <p>
+                    Regular physical activity can improve cardiovascular
+                    fitness and endurance.
+                </p>
+            </div>
+
+            <div class="card">
+                <h3>🧠 Well-Being</h3>
+                <p>
+                    Staying physically active can support overall
+                    mental and physical well-being.
+                </p>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Workouts -->
+    <section id="workouts">
+        <h2>Different Workouts</h2>
+
+        <div class="cards">
+
+            <div class="card">
+                <h3>🏃 Cardio</h3>
+                <p>
+                    Running, cycling and other aerobic activities
+                    can improve endurance.
+                </p>
+            </div>
+
+            <div class="card">
+                <h3>🏋️ Strength Training</h3>
+                <p>
+                    Exercises using resistance can help develop
+                    strength and muscle fitness.
+                </p>
+            </div>
+
+            <div class="card">
+                <h3>🧘 Flexibility</h3>
+                <p>
+                    Stretching and mobility exercises can help
+                    maintain flexibility and movement.
+                </p>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Nutrition -->
+    <section id="nutrition">
+        <h2>Nutrition Tips</h2>
+
+        <ul>
+            <li>Eat a variety of nutritious foods.</li>
+            <li>Include fruits and vegetables in your meals.</li>
+            <li>Choose healthy sources of protein.</li>
+            <li>Drink enough water throughout the day.</li>
+            <li>Try to maintain regular and balanced meals.</li>
+        </ul>
+    </section>
+
+    <!-- Equipment -->
+    <section id="equipment">
+        <h2>Gym Equipment</h2>
+
+        <div class="cards">
+
+            <div class="card">
+                <h3>Dumbbells</h3>
+                <p>
+                    Useful for many different strength exercises.
+                </p>
+            </div>
+
+            <div class="card">
+                <h3>Barbells</h3>
+                <p>
+                    Commonly used for various resistance exercises.
+                </p>
+            </div>
+
+            <div class="card">
+                <h3>Treadmill</h3>
+                <p>
+                    A machine commonly used for walking or running indoors.
+                </p>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Beginner Tips -->
+    <section id="beginners">
+        <h2>Beginner Tips</h2>
+
+        <ul>
+            <li>Start with simple exercises and learn proper technique.</li>
+            <li>Warm up before exercising.</li>
+            <li>Increase exercise difficulty gradually.</li>
+            <li>Give your body enough time to recover.</li>
+            <li>Stay consistent rather than trying to do too much at once.</li>
+            <li>If you are unsure about an exercise, ask a qualified trainer.</li>
+        </ul>
+    </section>
+
+    <!-- Contact -->
+    <section class="contact">
+        <h2>Contact Us</h2>
+
+        <p>
+            Want to learn more about fitness?
+            Visit Ayan Fitness Gym and start your fitness journey.
+        </p>
+
+        <a href="mailto:info@ayanfitnessgym.com" class="btn">
+            Contact Us
+        </a>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>© 2026 Ayan Fitness Gym. All Rights Reserved.</p>
+    </footer>
 
 </body>
 </html>
