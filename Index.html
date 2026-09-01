@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Ayan Obstacle 3D</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+html,body{
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    background:#020617;
+    touch-action:none;
+    font-family:Arial,sans-serif;
+}
+
+canvas{
+    position:fixed;
+    inset:0;
+    width:100%;
+    height:100%;
+}
+
+#ui{
+    position:fixed;
+    top:18px;
+    left:15px;
+    right:15px;
+    z-index:5;
+    display:flex;
+    justify-content:space-between;
+    color:white;
+    font-size:18px;
+    font-weight:bold;
+}
+
+.box{
+    padding:10px 14px;
+    border-radius:14px;
+    background:rgba(0,0,0,.45);
+    border:1px solid rgba(255,255,255,.25);
+    backdrop-filter:blur(8px);
+}
+
+#start,#over{
+    position:fixed;
+    inset:0;
+    z-index:10;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    background:rgba(2,6,23,.58);
+    color:white;
+}
+
+#over{
+    display:none;
+}
+
+h1{
+    font-size:clamp(38px,10vw,65px);
+    margin-bottom:10px;
+    letter-spacing:2px;
+    text-shadow:0 0 25px #00c8ff;
+}
+
+p{
+    color:#dbeafe;
+    margin-bottom:28px;
+    font-size:18px;
+}
+
+button{
+    padding:16px 34px;
+    border:0;
+    border-radius:15px;
+    color:white;
+    font-size:20px;
+    font-weight:bold;
+    background:linear-gradient(135deg,#087cff,#7c20ff);
+    box-shadow:0 0 30px rgba(30,120,255,.5);
+}
+
+button:active{
+    transform:scale(.95);
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="canvas"></canvas>
+
+<div id="ui">
+    <div class="box">⭐ Score: <span id="score">0</span></div>
+    <div class="box">🪙 Coins: <span id="coins">0</span></div>
+</div>
+
+<div id="start">
+    <h1>AYAN</h1>
+    <h1>OBSTACLE 3D</h1>
+    <p>Tap screen to jump</p>
+    <button id="startBtn">START GAME</button>
+</div>
+
+<div id="over">
+    <h1>GAME OVER</h1>
+    <p id="result"></p>
+    <button id="againBtn">PLAY AGAIN</button>
+</div>
+
+<script>
+
+const canvas=document.getElementById("canvas");
+const ctx=canvas.getContext("2d");
+
+let W,H;
+
+function resize(){
+    W=canvas.width=window.innerWidth;
+    H=canvas.height=window.innerHeight;
+}
+
+resize();
+window.addEventListener("resize",resize);
+
+
+/* GAME VARIABLES */
+
+let running=false;
+let score=0;
+let coins=0;
+let speed=0.012;
+
+let player={
+    x:0,
+    y:0,
+    jump:0,
+    velocity:0
+};
+
+let obstacles=[];
+let coinList=[];
+
+let frame=0;
+
+
+/* START */
+
+document.getElementById("startBtn").onclick=startGame;
+document.getElementById("againBtn").onclick=startGame;
+
+function startGame(){
+
+    document.getElementById("start").style.display="none";
+    document.getElementById("over").style.display="none";
+
+    score=0;
+    coins=0;
+    speed=.012;
+
+    obstacles=[];
+    coinList=[];
+
+    player.jump=0;
+    player.velocity=0;
+
+    frame=0;
+    running=true;
+
+    gameLoop();
+}
+
+
+/* JUMP */
+
+function jump(){
+
+    if(!running)return;
+
+    if(player.jump===0){
+        player.velocity=.035;
+    }
+}
+
+document.addEventListener("touchstart",function(e){
+
+    if(e.target.tagName!=="BUTTON"){
+        jump();
+    }
+
+});
+
+document.addEventListener("keydown",function(e){
+
+    if(e.code==="Space" || e.code==="ArrowUp"){
+        jump();
+    }
+
+});
+
+
+/* CREATE OBSTACLE */
+
+function makeObstacle(){
+
+    obstacles.push({
+        z:1,
+        x:(Math.random()-.5)*1.6
+    });
+}
+
+
+/* CREATE COIN */
+
+function makeCoin(){
+
+    coinList.push({
+        z:1,
+        x:(Math.random()-.5)*1.6,
+        spin:0
+    });
+}
+
+
+/* WORLD */
+
+function drawWorld(){
+
+    /* SKY */
+
+    let sky=ctx.createLinearGradient(0,0,0,H);
+
+    sky.addColorStop(0,"#020617");
+    sky.addColorStop(.55,"#102858");
+    sky.addColorStop(1,"#050816");
+
+    ctx.fillStyle=sky;
+    ctx.fillRect(0,0,W,H);
+
+
+    /* MOON */
+
+    ctx.beginPath();
+
+    ctx.arc(
+        W*.82,
+        H*.16,
+        Math.min(W,H)*.07,
+        0,
+        Math.PI*2
+    );
+
+    ctx.fillStyle="#ffffff";
+    ctx.shadowBlur=30;
+    ctx.shadowColor="#ffffff";
+    ctx.fill();
+    ctx.shadowBlur=0;
+
+
+    /* STARS */
+
+    for(let i=0;i<45;i++){
+
+        let x=(i*97)%W;
+        let y=(i*53)%(H*.55);
+
+        ctx.fillStyle="rgba(255,255,255,.7)";
+        ctx.fillRect(x,y,2,2);
+    }
+
+
+    /* HORIZON */
+
+    let horizon=H*.43;
+
+
+    /* ROAD */
+
+    ctx.fillStyle="#151b29";
+
+    ctx.beginPath();
+
+    ctx.moveTo(W*.46,horizon);
+    ctx.lineTo(W*.54,horizon);
+    ctx.lineTo(W*.98,H);
+    ctx.lineTo(W*.02,H);
+    ctx.closePath();
+
+    ctx.fill();
+
+
+    /* ROAD EDGES */
+
+    ctx.strokeStyle="#20d9ff";
+    ctx.lineWidth=4;
+
+    ctx.beginPath();
+    ctx.moveTo(W*.46,horizon);
+    ctx.lineTo(W*.02,H);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(W*.54,horizon);
+    ctx.lineTo(W*.98,H);
+    ctx.stroke();
+
+
+    /* ROAD CENTER */
+
+    for(let i=0;i<12;i++){
+
+        let z=(i/12);
+
+        let y=horizon+(H-horizon)*z;
+
+        let width=5+z*20;
+
+        ctx.fillStyle="rgba(255,255,255,.8)";
+
+        ctx.fillRect(
+            W/2-width/2,
+            y,
+            width,
+            4+z*15
+        );
+    }
+}
+
+
+/* 3D POSITION */
+
+function project(x,z){
+
+    let horizon=H*.43;
+
+    let depth=1-z;
+
+    let y=horizon+depth*(H-horizon);
+
+    let roadWidth=
+        W*(.08+depth*.55);
+
+    let px=W/2+x*roadWidth;
+
+    let scale=.25+depth*1.5;
+
+    return {
+        x:px,
+        y:y,
+        scale:scale
+    };
+}
+
+
+/* PLAYER */
+
+function drawPlayer(){
+
+    let groundY=H*.78;
+
+    let jumpHeight=
+        player.jump*H*.25;
+
+    let x=W/2;
+
+    let y=groundY-jumpHeight;
+
+    let s=Math.min(W,H)/400;
+
+
+    /* SHADOW */
+
+    ctx.beginPath();
+
+    ctx.ellipse(
+        x,
+        groundY+5,
+        30*s,
+        10*s,
+        0,
+        0,
+        Math.PI*2
+    );
+
+    ctx.fillStyle="rgba(0,0,0,.5)";
+    ctx.fill();
+
+
+    /* LEGS */
+
+    ctx.fillStyle="#111827";
+
+    ctx.fillRect(
+        x-18*s,
+        y+45*s,
+        12*s,
+        32*s
+    );
+
+    ctx.fillRect(
+        x+6*s,
+        y+45*s,
+        12*s,
+        32*s
+    );
+
+
+    /* BODY */
+
+    let bodyGrad=
+        ctx.createLinearGradient(
+            x-25*s,y,
+            x+25*s,y+60*s
+        );
+
+    bodyGrad.addColorStop(0,"#22d3ee");
+    bodyGrad.addColorStop(1,"#2563eb");
+
+    ctx.fillStyle=bodyGrad;
+
+    ctx.beginPath();
+
+    ctx.roundRect(
+        x-25*s,
+        y,
+        50*s,
+        60*s,
+        12*s
+    );
+
+    ctx.fill();
+
+
+    /* HEAD */
+
+    ctx.fillStyle="#ffd0a3";
+
+    ctx.beginPath();
+
+    ctx.arc(
+        x,
+        y-20*s,
+        25*s,
+        0,
+        Math.PI*2
+    );
+
+    ctx.fill();
+
+
+    /* HAIR */
+
+    ctx.fillStyle="#151515";
+
+    ctx.beginPath();
+
+    ctx.arc(
+        x,
+        y-28*s,
+        23*s,
+        Math.PI,
+        Math.PI*2
+    );
+
+    ctx.fill();
+
+
+    /* EYES */
+
+    ctx.fillStyle="#111";
+
+    ctx.fillRect(
+        x-10*s,
+        y-22*s,
+        5*s,
+        5*s
+    );
+
+    ctx.fillRect(
+        x+5*s,
+        y-22*s,
+        5*s,
+        5*s
+    );
+}
+
+
+/* OBSTACLES */
+
+function drawObstacles(){
+
+    obstacles.forEach(o=>{
+
+        let p=project(o.x,o.z);
+
+        let s=p.scale;
+
+        let w=45*s;
+        let h=60*s;
+
+        ctx.save();
+
+        ctx.translate(p.x,p.y);
+
+        /* 3D SIDE */
+
+        ctx.fillStyle="#7f1d1d";
+
+        ctx.fillRect(
+            w/2,
+            -h,
+            12*s,
+            h
+        );
+
+
+        /* FRONT */
+
+        let grad=
+            ctx.createLinearGradient(
+                -w/2,-h,
+                w/2,0
+            );
+
+        grad.addColorStop(0,"#ff5a5a");
+        grad.addColorStop(1,"#b91c1c");
+
+        ctx.fillStyle=grad;
+
+        ctx.fillRect(
+            -w/2,
+            -h,
+            w,
+            h
+        );
+
+
+        /* WARNING */
+
+        ctx.fillStyle="#ffd43b";
+
+        ctx.fillRect(
+            -w*.25,
+            -h*.55,
+            w*.5,
+            7*s
+        );
+
+        ctx.restore();
+    });
+}
+
+
+/* COINS */
+
+function drawCoins(){
+
+    coinList.forEach(c=>{
+
+        let p=project(c.x,c.z);
+
+        let s=p.scale;
+
+        let r=13*s;
+
+        ctx.save();
+
+        ctx.translate(p.x,p.y-r*2);
+
+        c.spin+=.12;
+
+        let width=
+            Math.abs(Math.cos(c.spin))*r;
+
+        ctx.beginPath();
+
+        ctx.ellipse(
+            0,
+            0,
+            Math.max(width,2),
+            r,
+            0,
+            0,
+            Math.PI*2
+        );
+
+        ctx.fillStyle="#ffd21f";
+        ctx.shadowBlur=15;
+        ctx.shadowColor="#ffd21f";
+        ctx.fill();
+
+        ctx.shadowBlur=0;
+
+        ctx.strokeStyle="#fff09a";
+        ctx.lineWidth=2;
+
+        ctx.stroke();
+
+        ctx.restore();
+    });
+}
+
+
+/* UPDATE */
+
+function update(){
+
+    if(!running)return;
+
+    frame++;
+
+    score++;
+
+    document.getElementById("score").textContent=score;
+
+
+    /* JUMP */
+
+    if(player.velocity!==0 || player.jump>0){
+
+        player.jump+=player.velocity;
+
+        player.velocity-=.0018;
+
+        if(player.jump<=0){
+
+            player.jump=0;
+            player.velocity=0;
+        }
+    }
+
+
+    /* SPAWN */
+
+    if(frame%85===0){
+        makeObstacle();
+    }
+
+    if(frame%65===0){
+        makeCoin();
+    }
+
+
+    /* MOVE */
+
+    obstacles.forEach(o=>{
+        o.z-=speed;
+    });
+
+    coinList.forEach(c=>{
+        c.z-=speed;
+    });
+
+
+    /* OBSTACLE COLLISION */
+
+    obstacles.forEach(o=>{
+
+        if(
+            o.z<.13 &&
+            o.z>-.02 &&
+            Math.abs(o.x)<.32 &&
+            player.jump<.22
+        ){
+            endGame();
+        }
+    });
+
+
+    /* COIN COLLISION */
+
+    coinList.forEach((c,i)=>{
+
+        if(
+            c.z<.13 &&
+            c.z>-.02 &&
+            Math.abs(c.x)<.35 &&
+            player.jump>.05
+        ){
+
+            coins++;
+
+            score+=50;
+
+            document.getElementById("coins")
+                .textContent=coins;
+
+            coinList.splice(i,1);
+        }
+    });
+
+
+    /* REMOVE */
+
+    obstacles=
+        obstacles.filter(o=>o.z>-0.1);
+
+    coinList=
+        coinList.filter(c=>c.z>-0.1);
+
+
+    /* DIFFICULTY */
+
+    if(score%500===0){
+        speed+=.001;
+    }
+}
+
+
+/* GAME LOOP */
+
+function gameLoop(){
+
+    if(!running)return;
+
+    update();
+
+    drawWorld();
+    drawObstacles();
+    drawCoins();
+    drawPlayer();
+
+    requestAnimationFrame(gameLoop);
+}
+
+
+/* GAME OVER */
+
+function endGame(){
+
+    running=false;
+
+    document.getElementById("result")
+        .textContent=
+        "Score: "+score+
+        "  |  Coins: "+coins;
+
+    document.getElementById("over")
+        .style.display="flex";
+}
+
+
+/* INITIAL SCREEN */
+
+drawWorld();
+drawPlayer();
+
+</script>
+
+</body>
+</html>
